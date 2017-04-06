@@ -18,7 +18,7 @@
  **
  **/
 
-class LighterWC {
+class WebWidgets {
 
     static define(_WClazz) {
         let WClazz = class extends _WClazz {
