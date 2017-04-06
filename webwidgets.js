@@ -21,14 +21,18 @@
 class WebWidgets {
 
     static define(_WClazz) {
+        //pre-condition: it exists a dom-module with '_WClazz.is' in the imported html files (rel=import).
+        const _wwDomModule = WebWidgets.findDomModuleWithId(_WClazz.is);
+        if (_wwDomModule == null)
+            throw 'Cannot find any web widget with id <' + _WClazz.is + '>';
+
         let WClazz = class extends _WClazz {
             constructor() {
                 super();
 
                 let shadowRoot = this.attachShadow({ mode: 'open' });
 
-                const _wcDomModule = LighterWC.findDomModuleWithId(super.constructor.is);
-                const _wcTemplate = _wcDomModule.querySelector('template');
+                const _wcTemplate = _wwDomModule.querySelector('template');
                 const _importedTemplate = document.importNode(_wcTemplate.content, true);
                 shadowRoot.appendChild(_importedTemplate);
             }
