@@ -31,7 +31,6 @@ class WebWidgets {
                 super();
 
                 let shadowRoot = this.attachShadow({ mode: 'open' });
-
                 const _wcTemplate = _wwDomModule.querySelector('template');
                 const _importedTemplate = document.importNode(_wcTemplate.content, true);
                 shadowRoot.appendChild(_importedTemplate);
