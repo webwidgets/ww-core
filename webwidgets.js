@@ -30,11 +30,29 @@ class WebWidgets {
             constructor() {
                 super();
 
+                this.$ = {};
+
+                //Initialize shadowDom and its template.
                 let shadowRoot = this.attachShadow({ mode: 'open' });
+                this.$.shadowRoot = shadowRoot; //Save the shadowRoot for a next use.
                 const _wcTemplate = _wwDomModule.querySelector('template');
                 const _importedTemplate = document.importNode(_wcTemplate.content, true);
                 shadowRoot.appendChild(_importedTemplate);
-            }
+
+                //Generate getter and setter for the attributes.
+                const obAttr = this.constructor.observedAttributes;
+                if (typeof obAttr != 'undefined')
+                    for (let i=0,_attrName; i<obAttr.length && (_attrName = obAttr[i]); i++) {
+                        this['_' + _attrName] = undefined;
+                        Object.defineProperty(this, _attrName, {
+                            get: function () { return this['_' + _attrName]; },
+                            set: function (v) { this.setAttribute(_attrName, v); }
+                        });
+                    }
+
+                //Calls lifecycle callback.
+                if (typeof this.constructedCallback === 'function')  this.constructedCallback();
+            }//EndFakeConstruction.
         };
 
         //Register the web component.
