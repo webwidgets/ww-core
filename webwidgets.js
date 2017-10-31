@@ -39,6 +39,14 @@ class WebWidgets {
                 const _importedTemplate = document.importNode(_wcTemplate.content, true);
                 shadowRoot.appendChild(_importedTemplate);
 
+                //Finds all the ids in the shadow dom to map it in the $ object.
+                const _elementsWithIdAttribute = this.$.shadowRoot.querySelectorAll("[id]");
+                for (let i=0; i<_elementsWithIdAttribute.length; i++) {
+                    const _element = _elementsWithIdAttribute[i];
+                    const _id = _element.id;
+                    this.$[_id] = _element;
+                }//EndFor.
+
                 //Generate getter and setter for the attributes.
                 const obAttr = this.constructor.observedAttributes;
                 if (typeof obAttr != 'undefined')

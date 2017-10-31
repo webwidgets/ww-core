@@ -1,7 +1,7 @@
 {
   "name": "ww-core",
   "version": "0.0.1",
-  "description": "",
+  "description": "Core module for the WebWidgets library.",
   "main": "webwidgets.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
