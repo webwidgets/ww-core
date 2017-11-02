@@ -21,6 +21,10 @@
 class WebWidgets {
 
     static define(_WClazz) {
+        //_WClazz must have the is static property.
+        if (typeof _WClazz.is === 'undefined')
+            throw "The web component must have a static property named 'static get is()' ";
+
         //pre-condition: it exists a dom-module with '_WClazz.is' in the imported html files (rel=import).
         const _wwDomModule = WebWidgets.findDomModuleWithId(_WClazz.is);
         if (_wwDomModule == null)
@@ -36,8 +40,11 @@ class WebWidgets {
                 let shadowRoot = this.attachShadow({ mode: 'open' });
                 this.$.shadowRoot = shadowRoot; //Save the shadowRoot for a next use.
                 const _wcTemplate = _wwDomModule.querySelector('template');
-                const _importedTemplate = document.importNode(_wcTemplate.content, true);
-                shadowRoot.appendChild(_importedTemplate);
+
+                if (_wcTemplate != null) {//The WC could not have the template tag.
+                    const _importedTemplate = document.importNode(_wcTemplate.content, true);
+                    shadowRoot.appendChild(_importedTemplate);
+                }
 
                 //Finds all the ids in the shadow dom to map it in the $ object.
                 const _elementsWithIdAttribute = this.$.shadowRoot.querySelectorAll("[id]");
@@ -79,13 +86,18 @@ class WebWidgets {
         const _arrLinkImports = Array.from(_linkImports);
         const _domModuleSelector = 'dom-module[id=' + findId + ']';
 
+        //_arrLinkImports contains all the 'link' elements defined in the web page.
+        //From all the 'link' elements, it finds the correspondent dom-module[id=findId] element.
         var _domModules = _arrLinkImports.map( (link) => {
-            return link.import.querySelector(_domModuleSelector);
+            return (link.import.querySelector(_domModuleSelector));
         });
+         _domModules = _domModules.filter( (linkElement) => { return (linkElement != null); } );
 
+        //dom-module with [id=findId] not found in the page.
         if (_domModules.length == 0)
             throw 'Cannot find ' + _domModuleSelector + ' in the page.';
 
+        //dom-module with [id=findId] found more then once.
         if (_domModules.length > 1)
             throw 'The same ' + _domModuleSelector + ' has been imported more than one time.';
 
