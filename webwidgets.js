@@ -80,36 +80,33 @@ class WebWidgets {
      * @param findId
      */
     static findDomModuleWithId(findId) {
-        //List all the tag 'link' with attribute 'rel=import'.
-        //The file content is in the '.import' property.
-        const _linkImports = document.querySelectorAll('link[rel=import]');
-        const _arrLinkImports = Array.from(_linkImports);
         const _domModuleSelector = 'dom-module[id=' + findId + ']';
+        var stack = [];
 
-        //_arrLinkImports contains all the 'link' elements defined in the web page.
-        //From all the 'link' elements, it finds the correspondent dom-module[id=findId] element.
-        var _domModules = _arrLinkImports.map( (link) => {
-            return (link.import.querySelector(_domModuleSelector));
-        });
-         _domModules = _domModules.filter( (linkElement) => { return (linkElement != null); } );
+        //List all the tag 'link' with attribute 'rel=import'.
+        Array.from(document.querySelectorAll('link[rel=import]')).forEach(link => { stack.push(link); });
 
-        if (_domModules.lw)
-        _linkImports.map( (link) => {
-            var _linkDocument = link.import.querySelector('link[rel=import]');
-            return _linkDocument.querySelector(_domModuleSelector);
-        });
+        while (stack.length > 0) {//BFS.
+            var _link = stack.shift();
+            var _shadowDocument = _link.import;
 
-        //dom-module with [id=findId] not found in the page.
-        if (_domModules.length == 0)
-            throw 'Cannot find ' + _domModuleSelector + ' in the page.';
+            //Shadow dom cannot be null, maybe it has not been loaded at this point,
+            //so push it again in the stack.
+            if (_shadowDocument === null) {
+                stack.push(_link);
+                continue;
+            }
 
-        //dom-module with [id=findId] found more then once.
-        if (_domModules.length > 1)
-            throw 'The same ' + _domModuleSelector + ' has been imported more than one time.';
+            var foundedDomModule = (_shadowDocument.querySelector(_domModuleSelector));
+            if (foundedDomModule) return foundedDomModule;
 
-        return _domModules[0];
+            //Module not found, so it looks for other (inside this shadow dom) link[rel=import].
+            Array.from(_shadowDocument.querySelectorAll('link[rel=import]')).forEach(link => { stack.push(link); });
+        }
+
+        throw 'Cannot find ' + _domModuleSelector + ' in the page.';
     }//EndFunction.
-
+    
 };//EndClass.
 
 
