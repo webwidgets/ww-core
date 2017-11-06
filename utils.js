@@ -46,7 +46,7 @@ class Utils {
                     });
                 }
             };
-            xhr.onerror = function () {
+            xhr.onerror = function (event) {
                 reject({
                     status: this.status,
                     statusText: xhr.statusText

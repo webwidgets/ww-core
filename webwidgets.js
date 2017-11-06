@@ -93,6 +93,12 @@ class WebWidgets {
         });
          _domModules = _domModules.filter( (linkElement) => { return (linkElement != null); } );
 
+        if (_domModules.lw)
+        _linkImports.map( (link) => {
+            var _linkDocument = link.import.querySelector('link[rel=import]');
+            return _linkDocument.querySelector(_domModuleSelector);
+        });
+
         //dom-module with [id=findId] not found in the page.
         if (_domModules.length == 0)
             throw 'Cannot find ' + _domModuleSelector + ' in the page.';
