@@ -106,7 +106,7 @@ class WebWidgets {
 
         throw 'Cannot find ' + _domModuleSelector + ' in the page.';
     }//EndFunction.
-    
+
 };//EndClass.
 
 
